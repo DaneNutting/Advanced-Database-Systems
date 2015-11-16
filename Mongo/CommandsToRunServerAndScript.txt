@@ -1,0 +1,4 @@
+Command to run a server
+"C:\Program Files\MongoDB\Server\3.0\bin\mongod" --dbpath D:CT6013\data\db
+Command to run a script
+"C:\Program Files\MongoDB\Server\3.0\bin\mongo" D:MongoDBTest\ScriptName.js
