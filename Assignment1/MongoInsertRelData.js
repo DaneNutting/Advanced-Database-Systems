@@ -18,6 +18,7 @@ db.AssignmentMarks.drop();
 var totalStudents = 16;
 var totalModules = 50;
 var totalAssignments = totalModules * 2;
+var modulesPerStudent = 4;
 var AssignmentsPerModule = 2;
 var lastStudentNo = totalStudents;
 var firstDocNo = 1;
@@ -41,40 +42,17 @@ for (i = firstDocNo, x = firstDocNo; i <= totalModules; i++ , x = x + Assignment
 	db.Modules.insert(ModuleData);
 	
 	//For each assignment per module, set in the AssignmentsPerModule var above, insert an assignment
-	//This method is more flexible than the hardcoded method below this for loop. By nesting this
+	//This method is more flexible than a hardcoded method. By nesting this
 	//Assignment insert for loop inside the module insert for loop you gain access to the current Module ID 
 	for (y = 1; y <= AssignmentsPerModule; y++) {
-		var AssignmentDataFor ={
-			"Assignment_ID": (x+y),
+		var AssignmentDataFor = {
+			"Assignment_ID": (x + y),
 			"Module_ID": i,
-			"Assignment_Title": "Assignment number " + (x+y),
-			"Assignment_Desc": "Assignment description for assignment number " + (x+y)
+			"Assignment_Title": "Assignment number " + (x + y),
+			"Assignment_Desc": "Assignment description for assignment number " + (x + y)
 		};
 		db.Assignments.insert(AssignmentDataFor);
 	}
-	
-	/*
-	//First method of inserting assignments per module - 2 hardcoded assignments.
-	//This has been left in to show progression, from nesting this insert in the Module insert for loop 
-	//To making it even more flexible as above
-	//Insert the first Assignment for the current Module	
-	var AssignmentData1 = {
-		"Assignment_ID": x,
-		"Module_ID": i,
-		"Assignment_Title": "Assignment number " + x,
-		"Assignment_Desc": "Assignment description for assignment number " + x
-	};
-	
-	//Insert the second assignment for the current Module
-	var AssignmentData2 = {
-		"Assignment_ID": x + 1,
-		"Module_ID": i,
-		"Assignment_Title": "Assignment number " + (x + 1),
-		"Assignment_Desc": "Assignment description for assignment number " + (x + 1)
-	};
-	
-	db.Assignments.insert([AssignmentData1, AssignmentData2]);
-	*/
 }
 
 //Insert Student Data
@@ -89,7 +67,6 @@ for (i = firstDocNo; i <= totalStudents; i++) {
 		"Town": "Cheltenham",
 		"Postcode": "GL" + Math.floor((Math.random() * 53) + 1) + " " + Math.floor((Math.random() * 9) + 1) + "AB"
 	};
-
 	db.Students.insert(StudentData);
 }
 
@@ -99,41 +76,30 @@ function getRandomModuleID() {
 	return randomNumber;
 }
 
-//Insert Module Grades, in doing so 4 random modules are assigned to a Student
-for (i=firstDocNo; i<=totalStudents; i++){
-	var ModuleGradesData1 = {
-		"Student_ID"	: i,
-		"Module_ID"		: getRandomModuleID(),
-		"Module_Mark"	: 0
-	};
-	var ModuleGradesData2 = {
-		"Student_ID"	: i,
-		"Module_ID"		: getRandomModuleID(),
-		"Module_Mark"	: 0 
-	};
-	var ModuleGradesData3 = {
-		"Student_ID"	: i,
-		"Module_ID"		: getRandomModuleID(),
-		"Module_Mark"	: 0
-	};
-	var ModuleGradesData4 = {
-		"Student_ID"	: i,
-		"Module_ID"		: getRandomModuleID(),
-		"Module_Mark"	: 0
-	};
-	
-	db.ModuleGrades.insert([ModuleGradesData1, ModuleGradesData2, ModuleGradesData3, ModuleGradesData4]);
+//Insert Module Grades, the number of modules inserted is dictated by the modulesPerStudent variable. A for loop is used here to be more
+//flexible, because now the number of modules assigned to a student can be altered by changing a variable value. 
+//Modules are assgined to students randomly using the function above. 
+for (i = firstDocNo; i <= totalStudents; i++) {
+	for (x = 1; x <= modulesPerStudent; x++) {
+		var ModuleGradesData = {
+			"Student_ID": i,
+			"Module_ID": getRandomModuleID(),
+			"Module_Mark": 0
+		}
+		db.ModuleGrades.insert(ModuleGradesData);
+	}
 }
 
 //This function finds all of a students modules and then all of the corresponding module assignments. It then inserts a new assignment mark
 //document where each assignment is assigned a random mark and a percentage that that mark is worth based on how many assignments there are
 //per module. The percentage that the assignments mark is worth is calculated and this value is stored in the variable moduleMark and when 
 //that module for loop is finished it updates the Module Grades table with the overall mark, based on the results of the assignment marks.
-//In summary the percentage a mark is worth will change depending on how manyt assignments there are for this particular module.
+//In summary: 
+//The percentage a mark is worth will change depending on how many assignments there are for this particular module.
 //AND
 //The Module Mark is a dynamic value based on sum of the adjusted assignment marks.
 
-function findAssignments(Student_ID) {
+function CreateAssignmentMarks(Student_ID) {
 	//return all Modules a student is registered on.
 	var modules = db.ModuleGrades.find({ "Student_ID": Student_ID }, { Module_ID: 1, _id: 0 });
 	
@@ -167,13 +133,13 @@ function findAssignments(Student_ID) {
 					"Module_Mark": moduleMark
 				}
 			}
-			);
+		);
 	});
 };
 	
 //Insert Assignment Results and update the Module Marks in the Module Grades table
- for (i=firstDocNo; i<=totalStudents; i++){
-	findAssignments(i);
+for (i = firstDocNo; i <= totalStudents; i++) {
+	CreateAssignmentMarks(i);
 };
 
 //===========================================================================================
