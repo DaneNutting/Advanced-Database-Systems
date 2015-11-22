@@ -35,7 +35,8 @@ for (i = firstDocNo, x = firstDocNo; i <= totalModules; i++ , x = x + Assignment
 	var ModuleData = {
 		"Module_ID": i,
 		"Module_Title": "Module number " + i,
-		"Module_Desc": "Module description for module number " + i
+		"Module_Desc": "Module description for module number " + i,
+		"CatPoints": 30
 	};
  	
 	//The Module data needs to be inserted before the assignment data can be inserted 
@@ -61,11 +62,11 @@ for (i = firstDocNo; i <= totalStudents; i++) {
 		"Student_ID": i,
 		"FirstName": "Jill " + i,
 		"SurName": "Smith " + i,
-		"Gender": "Female",
 		"DOB": randomDOB,
 		"Address": i + " Student Street",
 		"Town": "Cheltenham",
-		"Postcode": "GL" + Math.floor((Math.random() * 53) + 1) + " " + Math.floor((Math.random() * 9) + 1) + "AB"
+		"Postcode": "GL" + Math.floor((Math.random() * 53) + 1) + " " + Math.floor((Math.random() * 9) + 1) + "AB",
+		"Course"	: "Information Technology",
 	};
 	db.Students.insert(StudentData);
 }
@@ -143,5 +144,7 @@ for (i = firstDocNo; i <= totalStudents; i++) {
 };
 
 //===========================================================================================
-//Insert original data
+//Insert one more student record 
 //===========================================================================================
+
+//Create an Extra Student
